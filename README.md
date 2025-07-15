@@ -4,7 +4,7 @@ This repo contains the code for the default contract pack for <a href="https://w
 I'm still working on a detailed wiki.
 
 ### Requirements
-TheHitmanMod
+TheHitmanMod,
 ScriptHookVDotNet Nightly v31 (or higher)
 
 Add those dlls to your project.
