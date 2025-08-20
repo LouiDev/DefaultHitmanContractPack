@@ -4,8 +4,12 @@ This repo contains the code for the default contract pack for <a href="https://w
 I'm still working on a detailed wiki.
 
 ### Requirements
-TheHitmanMod,
-ScriptHookVDotNet Nightly v31 (or higher)
+<ul>
+  <li>GTA V Legacy</li>
+  <li>.NET 4.8</li>
+  <li>TheHitmanMod</li>
+  <li>ScriptHookVDotNet Nightly v42 (or higher)</li>
+</ul>
 
-Add those dlls to your project.
-Your exported project dll goes into GTA V/scripts/HitmanMod/ContractPacks
+### Getting started
+Download the latest release from this repo. Detailed instructions are included how to start making a contract pack.
