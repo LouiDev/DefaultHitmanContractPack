@@ -12,4 +12,4 @@ I'm still working on a detailed wiki.
 </ul>
 
 ### Getting started
-Download the latest release from this repo. Detailed instructions are included how to start making a contract pack.
+Download the latest release from this repo. Check out the wiki to get started.
