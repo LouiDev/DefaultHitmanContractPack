@@ -16,19 +16,26 @@ namespace DefaultHitmanContractPack.Contracts
         {
             var pedHashes = new PedHash[] { PedHash.Bevhills02AMM, PedHash.Eastsa01AMM, PedHash.MexLabor01AMM, PedHash.Soucent01AMM, PedHash.Genstreet02AMY };
             var spawnPos = World.GetNextPositionOnStreet(Game.Player.Character.Position.Around(260f), true);
-            var vehicleHashes = new VehicleHash[] {  VehicleHash.Sanctus, VehicleHash.Adder, VehicleHash.Habanero };
+            var vehicleHashes = new VehicleHash[] {  VehicleHash.Adder, VehicleHash.Habanero, VehicleHash.FQ2, VehicleHash.Asterope };
 
-            vehicle = World.CreateVehicle(new Model(vehicleHashes[new Random().Next(vehicleHashes.Length)]), spawnPos);
-            vehicle.IsPersistent = true;
+            Main.HitmanEngine.StartPhoneInstructions(new string[]
+            {
+                "~b~Ricky: ~w~Hey kiddo, I've got a job for you.",
+                "~b~Ricky: ~w~A guy just crashed the stock market big time.",
+                "~b~Ricky: ~w~I want you to take him out, but make it look like a drive-by.",
+                "~b~Ricky: ~w~I've marked him on your map, now get to work!"
+            }, () =>
+            {
+                vehicle = World.CreateVehicle(new Model(vehicleHashes[new Random().Next(vehicleHashes.Length)]), spawnPos);
+                vehicle.IsPersistent = true;
 
-            target = World.CreatePed(new Model(pedHashes[new Random().Next(pedHashes.Length)]), spawnPos);
-            target.IsPersistent = true;
-            target.SetIntoVehicle(vehicle, VehicleSeat.Driver);
-            target.Task.CruiseWithVehicle(vehicle, 19f, VehicleDrivingFlags.AdjustCruiseSpeedBasedOnRoadSpeed);
+                target = World.CreatePed(new Model(pedHashes[new Random().Next(pedHashes.Length)]), spawnPos);
+                target.IsPersistent = true;
+                target.SetIntoVehicle(vehicle, VehicleSeat.Driver);
+                target.Task.CruiseWithVehicle(vehicle, 19f, VehicleDrivingFlags.AdjustCruiseSpeedBasedOnRoadSpeed | VehicleDrivingFlags.SteerAroundPeds | VehicleDrivingFlags.StopForPeds | VehicleDrivingFlags.StopForVehicles);
 
-            blip = Main.HitmanEngine.AttachTargetBlipToPed(target);
-
-            Main.HitmanEngine.ShowClientMessage("Ricky", "Contract details", "I've marked you a guy which just crashed the stock market big time. Deal with him! Make sure it looks like a drive-by.");
+                blip = Main.HitmanEngine.AttachTargetBlipToPed(target);
+            });
         }
 
         public void OnUpdate()
@@ -79,6 +86,11 @@ namespace DefaultHitmanContractPack.Contracts
                 target.IsPersistent = false;
             if (blip != null && blip.Exists())
                 blip.Delete();
+        }
+
+        public void OnHitmanVision()
+        {
+            Screen.ShowHelpText("You can't sense anything right now");
         }
     }
 }

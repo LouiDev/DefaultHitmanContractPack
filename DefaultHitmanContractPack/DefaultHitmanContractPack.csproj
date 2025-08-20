@@ -31,12 +31,13 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="HitmanMod">
-      <HintPath>..\..\..\..\Documents\GTA 5\HitmanMod\HitmanMod.dll</HintPath>
-    </Reference>
-    <Reference Include="ScriptHookVDotNet3, Version=3.7.0.26, Culture=neutral, processorArchitecture=AMD64">
+    <Reference Include="HitmanMod, Version=0.0.0.24, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\Documents\GTA 5\HitmanMod\downloads\ScriptHookVDotNet-v3.7.0-nightly.31\ScriptHookVDotNet3.dll</HintPath>
+      <HintPath>D:\Dokumente\GTA 5 Modding\eigene mods\HitmanMod\files\HitmanMod.dll</HintPath>
+    </Reference>
+    <Reference Include="ScriptHookVDotNet3, Version=3.7.0.31, Culture=neutral, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>D:\Dokumente\GTA 5 Modding\libs\ScriptHookVDotNet-v3.7.0-nightly.42\ScriptHookVDotNet3.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -53,15 +54,16 @@
     <Compile Include="Contracts\Celebrity.cs" />
     <Compile Include="Contracts\ConstructionWorker.cs" />
     <Compile Include="Contracts\CarBomb.cs" />
+    <Compile Include="Contracts\PrivateJet.cs" />
+    <Compile Include="Contracts\UnknownTarget.cs" />
+    <Compile Include="Contracts\Soldier.cs" />
+    <Compile Include="Contracts\TheDate.cs" />
     <Compile Include="Contracts\Hacker.cs" />
     <Compile Include="Contracts\ContractPrefab.cs" />
     <Compile Include="Contracts\DriveBy.cs" />
     <Compile Include="Contracts\WifeBanger.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Main.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="version.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

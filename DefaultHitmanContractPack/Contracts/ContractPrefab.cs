@@ -15,7 +15,13 @@ namespace DefaultHitmanContractPack.Contracts
     {
         public void OnStart()
         {
-            
+            Main.HitmanEngine.StartPhoneInstructions(new string[]
+            {
+                ""
+            }, () =>
+            {
+                // Here you can spawn your target, blip, etc.
+            });
         }
 
         public void OnUpdate()
@@ -33,6 +39,7 @@ namespace DefaultHitmanContractPack.Contracts
         {
             Cleanup();
             Main.HitmanEngine.FailContract();
+            Main.HitmanEngine.ShowClientMessage("Ricky", "Contract failed", "You useless prick! We're done.");
         }
 
         void Complete() 
@@ -45,6 +52,11 @@ namespace DefaultHitmanContractPack.Contracts
         void Cleanup()
         {
 
+        }
+
+        public void OnHitmanVision()
+        {
+            Screen.ShowHelpText("You can't sense anything right now");
         }
     }
 }

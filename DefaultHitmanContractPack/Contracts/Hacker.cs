@@ -24,26 +24,36 @@ namespace DefaultHitmanContractPack.Contracts
             var spawnPos = World.GetNextPositionOnStreet(Game.Player.Character.Position.Around(250f), true);
             var vehicleHashes = new VehicleHash[] { VehicleHash.Sanctus, VehicleHash.Adder, VehicleHash.Habanero };
 
-            vehicle = World.CreateVehicle(new Model(vehicleHashes[new Random().Next(vehicleHashes.Length)]), spawnPos);
-            vehicle.IsPersistent = true;
+            Main.HitmanEngine.StartPhoneInstructions(new string[]
+            {
+                "~b~Ricky: ~w~Sup",
+                "~b~Ricky: ~w~Your target is a well known hacker and an enemy of mine.",
+                "~b~Ricky: ~w~So why don't we do some hacking for once?",
+                "~b~Ricky: ~w~I've got the location of his friend.",
+                "~b~Ricky: ~w~Hack him first to get the target's location."
+            }, () =>
+            {
+                vehicle = World.CreateVehicle(new Model(vehicleHashes[new Random().Next(vehicleHashes.Length)]), spawnPos);
+                vehicle.IsPersistent = true;
 
-            p1 = World.CreateRandomPed(spawnPos);
-            p1.IsPersistent = true;
-            p1.SetIntoVehicle(vehicle, VehicleSeat.Driver);
-            p1.Task.CruiseWithVehicle(vehicle, 19f, VehicleDrivingFlags.AdjustCruiseSpeedBasedOnRoadSpeed);
+                p1 = World.CreateRandomPed(spawnPos);
+                p1.IsPersistent = true;
+                p1.SetIntoVehicle(vehicle, VehicleSeat.Driver);
+                p1.Task.CruiseWithVehicle(vehicle, 19f, VehicleDrivingFlags.AdjustCruiseSpeedBasedOnRoadSpeed | VehicleDrivingFlags.SteerAroundPeds | VehicleDrivingFlags.StopForPeds | VehicleDrivingFlags.StopForVehicles);
 
-            blip1 = p1.AddBlip();
-            blip1.Color = BlipColor.Blue;
-            blip1.Name = "The hacker's son";
-            blip1.FlashInterval = 500;
-            blip1.FlashTimeLeft = 4000;
+                blip1 = p1.AddBlip();
+                blip1.Color = BlipColor.Blue;
+                blip1.Name = "The hacker's son";
+                blip1.FlashInterval = 500;
+                blip1.FlashTimeLeft = 4000;
 
-            step = 0;
+                step = 0;
+            });
+
+            step = -1;
             hackProgression = 0;
             suspicion = 0;
             cashBonus = 0;
-
-            Main.HitmanEngine.ShowClientMessage("Ricky", "Contract details", "Your target is a well know hacker and an enemy of mine. So why don't we hack him for a change? I've got the location of his friend. Hack his phone to get the target's current location.");
         }
 
         public void OnUpdate()
@@ -117,6 +127,7 @@ namespace DefaultHitmanContractPack.Contracts
 
         void Fail()
         {
+            Main.HitmanEngine.ShowClientMessage("Ricky", "Contract failed", "You useless prick! We're done.");
             Cleanup();
             Main.HitmanEngine.FailContract();
         }
@@ -159,6 +170,11 @@ namespace DefaultHitmanContractPack.Contracts
                 p1.IsPersistent = false;
             if (vehicle != null && vehicle.Exists())
                 vehicle.IsPersistent = false;
+        }
+
+        public void OnHitmanVision()
+        {
+            Screen.ShowHelpText("You can't sense anything right now");
         }
     }
 }

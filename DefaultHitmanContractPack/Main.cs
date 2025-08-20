@@ -4,7 +4,7 @@ using DefaultHitmanContractPack.Contracts;
 
 namespace DefaultHitmanContractPack
 {
-    [ContractPackAttributes("Ricky's contracts", "louidev", "1.0.0.0")]
+    [ContractPackAttributes("Ricky's contracts", "louidev", "1.1.0.0")]
     class Main : IHitmanContractPack
     {
         public static IHitmanEngine HitmanEngine;
@@ -19,8 +19,12 @@ namespace DefaultHitmanContractPack
                 new WifeBanger(),
                 new ConstructionWorker(),
                 new Hacker(),
-                //new CarBomb(),
-                new Celebrity()
+                new TheDate(),
+                new UnknownTarget(),
+                new PrivateJet(),
+                new CarBomb(),
+                new Celebrity(),
+                new Soldier()
             };
         }
     }

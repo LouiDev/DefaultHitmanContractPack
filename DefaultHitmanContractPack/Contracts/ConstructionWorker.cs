@@ -18,15 +18,24 @@ namespace DefaultHitmanContractPack.Contracts
 
         public void OnStart()
         {
-            step = 0;
+            step = -1;
 
-            var destPos = new Vector3(122.9156f, -349.298f, 41.91484f);
-            destBlip = World.CreateBlip(destPos);
-            destBlip.Color = BlipColor.Yellow;
-            destBlip.Name = "Destination";
-            destBlip.ShowRoute = true;
+            Main.HitmanEngine.StartPhoneInstructions(new string[]
+            {
+                "~b~Ricky: ~w~Hey kiddo, I've got a job for you.",
+                "~b~Ricky: ~w~A construction worker fucked up my cousin's new house BIG TIME.",
+                "~b~Ricky: ~w~I want you to take him out!",
+                "~b~Ricky: ~w~I've marked the location on your map, now get to work!"
+            }, () =>
+            {
+                var destPos = new Vector3(122.9156f, -349.298f, 41.91484f);
+                destBlip = World.CreateBlip(destPos);
+                destBlip.Color = BlipColor.Yellow;
+                destBlip.Name = "Destination";
+                destBlip.ShowRoute = true;
 
-            Main.HitmanEngine.ShowClientMessage("Ricky", "Contract details", "Alright, so your target is a construction worker. He fucked up my cousin's new house BIG TIME. Deal with him.");
+                step = 0;
+            });
         }
 
         public void OnUpdate()
@@ -131,18 +140,34 @@ namespace DefaultHitmanContractPack.Contracts
         {
             if (destBlip != null && destBlip.Exists())
                 destBlip.Delete();
+
             if (searchBlip != null && searchBlip.Exists())
                 searchBlip.Delete();
-            foreach (var ped in peds)
+
+            if (peds != null)
             {
-                if (ped != null && ped.Exists())
-                    ped.IsPersistent = false;
+                foreach (var ped in peds)
+                {
+                    if (ped != null && ped.Exists())
+                        ped.IsPersistent = false;
+                }
             }
         }
 
         bool IsSniper(WeaponHash hash)
         {
             return hash == WeaponHash.SniperRifle || hash == WeaponHash.HeavySniper || hash == WeaponHash.HeavySniperMk2;
+        }
+
+        public void OnHitmanVision()
+        {
+            if (step == 0)
+            {
+                Screen.ShowHelpText("You can't sense anything right now");
+            } else if (step == 1)
+            {
+                Screen.ShowHelpText("You can sense that the target is smoking standing on a rooftop wearing a construction worker outfit");
+            }
         }
     }
 }

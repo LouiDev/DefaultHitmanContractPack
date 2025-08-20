@@ -22,16 +22,24 @@ namespace DefaultHitmanContractPack.Contracts
             var pos = Game.Player.Character.Position.Around(200f);
             spawnPos = World.GetNextPositionOnSidewalk(World.GetNextPositionOnStreet(pos, true));
 
-            step = 0;
+            step = -1;
             cashBonus = 0;
 
-            target = World.CreatePed(new Model(possiblePedHashes[new Random().Next(possiblePedHashes.Length)]), spawnPos);
-            target.IsPersistent = true;
-            target.Task.UseMobilePhone();
+            Main.HitmanEngine.StartPhoneInstructions(new string[] {
+                "~b~Ricky: ~w~Alright kiddo",
+                "~b~Ricky: ~w~So this guy's been banging my wife recently",
+                "~b~Ricky: ~w~Take care of him and I will pay you fairly",
+                "~b~Ricky: ~w~He's waiting for an Uber",
+                "~b~Ricky: ~w~This would be a great opportunity to get rid of him",
+                "~b~Ricky: ~w~Now get to work",
+            }, () =>
+            {
+                target = World.CreatePed(new Model(possiblePedHashes[new Random().Next(possiblePedHashes.Length)]), spawnPos);
+                target.IsPersistent = true;
+                target.Task.UseMobilePhone();
 
-            marker = Main.HitmanEngine.AttachTargetBlipToPed(target);
-
-            Main.HitmanEngine.ShowClientMessage("Ricky", "Contract details", "Alright, so this guy I just marked on your map's been banging my wife recently. Take care of him and I will pay you fairly. Make sure you DO NOT erouse cop attention!");
+                step = 0;
+            });
         }
 
         public void OnUpdate()
@@ -46,29 +54,30 @@ namespace DefaultHitmanContractPack.Contracts
 
             if (step == 0)
             {
-                if (World.GetDistance(Game.Player.Character.Position, target.Position) <= 15f)
-                {
-                    Screen.ShowHelpText("Press ~g~E ~w~to listen what he says ont the phone.");
+                Screen.ShowSubtitle("Get inside a vehicle");
 
-                    if (Game.IsKeyPressed(System.Windows.Forms.Keys.E))
-                    {
-                        step = 1;
-                        Notification.PostTicker("You hear that he is waiting for an Uber. Organize a vehicle to disguise yourself as the Uber driver.", true);
-                    }
+                if (Game.Player.Character.IsSittingInVehicle())
+                {
+                    step = 1;
+
+                    if (marker == null)
+                        marker = Main.HitmanEngine.AttachTargetBlipToPed(target);
                 }
             } else if (step == 1)
             {
-                if (Game.Player.Character.IsSittingInVehicle())
-                {
-                    if (World.GetDistance(Game.Player.Character.Position, target.Position) <= 40f)
-                    {
-                        Screen.ShowHelpText("Use your horn to signal the target to get in.");
+                Screen.ShowSubtitle("Pick up the ~r~target");
 
-                        if (Game.IsControlJustPressed(Control.VehicleHorn))
-                        {
-                            target.Task.EnterVehicle(Game.Player.Character.CurrentVehicle, VehicleSeat.Passenger);
-                            step = 2;
-                        }
+                if (!Game.Player.Character.IsSittingInVehicle())
+                    step = 0;
+
+                if (World.GetDistance(Game.Player.Character.Position, target.Position) <= 15f)
+                {
+                    Screen.ShowHelpText("Use your horn to signal the target to get in.");
+
+                    if (Game.IsControlJustPressed(Control.VehicleHorn))
+                    {
+                        target.Task.EnterVehicle(Game.Player.Character.CurrentVehicle, VehicleSeat.Passenger);
+                        step = 2;
                     }
                 }
             } else if (step == 2)
@@ -77,14 +86,14 @@ namespace DefaultHitmanContractPack.Contracts
                 {
                     target.Task.ClearAll();
                     target.PlayAmbientSpeech("GENERIC_HI", SpeechModifier.Force);
-                    cashBonus = new Random().Next(400, 501);
-                    Notification.PostTicker($"~g~Optional task completed: ~w~~n~Make the target enter your vehicle. ~n~~g~+${ cashBonus } cash bonus", true);
                     step = 3;
-                }
-            }
 
-            if (Game.Player.Wanted.WantedLevel > 0)
-                Fail();
+                    Screen.ShowHelpText("Use your Hitman Vision to sense if there are any unwanted eyes watching");
+                }
+            } else if (step == 3)
+            {
+                Screen.ShowSubtitle("Eliminate the ~r~target");
+            }
         }
 
         public void OnAborted()
@@ -112,13 +121,32 @@ namespace DefaultHitmanContractPack.Contracts
             Main.HitmanEngine.ShowClientMessage("Ricky", "Contract complete", "Good job. Sending you the money now.");
             Main.HitmanEngine.IncreasePlayerStat(EPlayerStats.TargetsAssasinated);
 
-            if (cashBonus > 0)
-                Main.HitmanEngine.IncreasePlayerStat(EPlayerStats.SidequestsCompleted);
-            else
+            if (AreTooManyEyesWatching())
+            {
                 Main.HitmanEngine.IncreasePlayerStat(EPlayerStats.SidequestsFailed);
+                cashBonus = new Random().Next(500, 701);
+                Notification.PostTicker($"~g~Optional task completed: ~w~~n~Eliminate the target in a quiet area ~n~~g~+${cashBonus} cash bonus", true);
+            } else
+            {
+                Main.HitmanEngine.IncreasePlayerStat(EPlayerStats.SidequestsCompleted);
+            }
 
             Cleanup();
             Main.HitmanEngine.CompleteContract(cashBonus);
         }
+
+        public void OnHitmanVision()
+        {
+            if (step == 3)
+            {
+                if (AreTooManyEyesWatching())
+                    Screen.ShowHelpText("You can sense that there are too many unwanted eyes watching");
+                else
+                    Screen.ShowHelpText("You can sense that it's quiet enough around here");
+            } else
+                Screen.ShowHelpText("You can't sense anything right now");
+        }
+
+        bool AreTooManyEyesWatching() => World.GetNearbyPeds(Game.Player.Character, 40f).Length > 6;
     }
 }
